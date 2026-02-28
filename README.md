@@ -2,8 +2,7 @@
 A relaxing idle game where you grow plants, survive storms, and party during disco events.
 
 ## 🎮 Play Now
-**[CLICK HERE TO PLAY](https://your-username.github.io/zen-garden/)**
-*(Replace "your-username" with your actual GitHub name!)*
+**[CLICK HERE TO PLAY](https://ashton-gardens.github.io/ZEN-GARDEN/)**
 
 ## 🛠 Features
 * **Idle Growth:** Plants earn petals over time.
