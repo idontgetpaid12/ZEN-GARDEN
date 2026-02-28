@@ -4,7 +4,6 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
 ## 🛠 Features
 * **Idle Growth:** Plants earn petals over time.
 * **Weather Events:** Survive the Storm to get bonus rewards!
-* **Disco Mode:** Use the secret code `MANILOVETHISGAME` to start the party.
 * **Fullscreen Support:** Play in immersive mode with the click of a button.
 
 ## 📜 License & Credits
