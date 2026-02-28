@@ -1,9 +1,6 @@
 # 🌸 Ashton's Zen Garden
 A relaxing idle game where you grow plants, survive storms, and party during disco events.
 
-## 🎮 Play Now
-**[CLICK HERE TO PLAY](https://ashton-gardens.github.io/ZEN-GARDEN/)**
-
 ## 🛠 Features
 * **Idle Growth:** Plants earn petals over time.
 * **Weather Events:** Survive the Storm to get bonus rewards!
