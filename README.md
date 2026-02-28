@@ -13,7 +13,7 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
 <!DOCTYPE html>
 <html>
 <head>
-    <title>ZEN GARDEN: BY ASHTON (QUEST UPDATE)</title>
+    <title>ZEN GARDEN: BY ASHTON (INSTANT COLLECT)</title>
     <style>
         :root { --dirt: #5d3a1a; --grass: #2d5a27; --gold: #ffd700; --banana: #f1c40f; --ui-bg: #ffffff; }
         
@@ -39,7 +39,7 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
 
         .main { display: flex; flex-direction: row; flex-wrap: nowrap; gap: 15px; padding: 20px; width: fit-content; max-width: 100vw; justify-content: center; align-items: flex-start; }
         
-        /* SHOP SIDEBAR - NOW WHITE */
+        /* SHOP SIDEBAR - WHITE */
         .sidebar { background: var(--ui-bg); padding: 15px; border-radius: 15px; width: 160px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); border: 1px solid #eee; display: flex; flex-direction: column; min-height: 480px; flex-shrink: 0; }
         .item { padding: 10px; margin: 4px 0; border-radius: 8px; cursor: pointer; transition: 0.2s; border: 1px solid #f0f0f0; font-weight: 500; font-size: 13px; background: #fff; }
         .item:hover { background: #f8f9fa; transform: translateX(5px); }
@@ -174,7 +174,6 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
                 } else { p.time -= remaining; remaining = 0; }
             }
         });
-        showAppModal("Welcome Back!", `You were away for ${Math.floor(seconds)}s. Your plants grew while you were gone!`);
     }
 
     function tick() {
@@ -246,19 +245,31 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
         }
     }
 
+    // UPDATED DO_CLICK: Fixed for instant one-click collection
     function doClick(i) {
         let p = plots[i];
+        
+        // 1. Shovel Tool
         if(tool === -1) { resetPlot(i); return; }
+        
+        // 2. Collection (If stage 3, collect immediately)
         if(p.stage === 3) {
-            let mult = (p.sur ? 3 : 1) + (p.dan ? 7 : 0);
+            let mult = (p.sur ? 3 : 1) + (p.dan ? 10 : 0);
             petals += (plants[p.type].rev * mult);
             totalHarvested++;
             resetPlot(i);
+            renderPlot(i);
             return;
         }
+        
+        // 3. Planting
         if(p.stage === 0 && petals >= plants[tool].cost) {
             petals -= plants[tool].cost;
-            p.type = tool; p.stage = 1; p.time = plants[tool].t; p.max = p.time;
+            p.type = tool; 
+            p.stage = 1; 
+            p.time = plants[tool].t; 
+            p.max = p.time;
+            renderPlot(i);
         }
     }
 
@@ -282,7 +293,6 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
             { id: 4, text: "Save up 5,000 Petals", check: () => petals >= 5000, reward: 1000 },
             { id: 5, text: "Survive a Storm", check: () => state === "WAIT_DISCO", reward: 800 }
         ];
-        // Pick 3 random quests
         activeQuests = pool.sort(() => 0.5 - Math.random()).slice(0, 3).map(q => ({...q, done: false}));
         renderQuestsUI();
     }
@@ -323,13 +333,13 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
     function manualSave() { save(); const t = document.getElementById('save-toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
     
     function save() { 
-        localStorage.setItem('ZEN_FINAL_V1', JSON.stringify({ 
+        localStorage.setItem('ZEN_INSTANT_V1', JSON.stringify({ 
             p: petals, plots: plots, state: state, e: eTime, h: totalHarvested, q: activeQuests, last: Date.now() 
         })); 
     }
 
     function load() {
-        let s = localStorage.getItem('ZEN_FINAL_V1');
+        let s = localStorage.getItem('ZEN_INSTANT_V1');
         if(s) {
             let d = JSON.parse(s); 
             petals = d.p; eTime = d.e; totalHarvested = d.h || 0;
@@ -342,7 +352,7 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
             renderQuestsUI();
         }
     }
-    function buyPack() { if(petals >= 1000) { petals -= 1000; alert("You got a lucky charm! (Quests will reset)"); genQuests(); } }
+    function buyPack() { if(petals >= 1000) { petals -= 1000; alert("Quests reset!"); genQuests(); } }
 </script>
 </body>
 </html>
