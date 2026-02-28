@@ -21,7 +21,6 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
     <style>
         :root { --dirt: #5d3a1a; --grass: #2d5a27; --gold: #ffd700; --banana: #f1c40f; --ui-bg: rgba(255,255,255,0.95); }
         
-        /* FIXED: Changed to auto so you can scroll if the screen is small */
         body { 
             background: #a8dadc; 
             font-family: 'Segoe UI', sans-serif; 
@@ -42,10 +41,11 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
         #save-toast { position: fixed; top: 20%; background: #2ecc71; color: white; padding: 10px 25px; border-radius: 50px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transform: translateY(-100px); opacity: 0; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 2000; pointer-events: none; }
         #save-toast.show { transform: translateY(0); opacity: 1; }
 
-        .main { display: flex; flex-wrap: wrap; gap: 15px; padding: 15px; width: 95%; max-width: 1200px; justify-content: center; }
+        .main { display: flex; flex-wrap: wrap; gap: 15px; padding: 15px; width: 98%; max-width: 1400px; justify-content: center; }
         .sidebar { background: var(--ui-bg); padding: 12px; border-radius: 15px; width: 180px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; min-height: 480px; }
         
-        #grid { display: grid; grid-template-columns: repeat(4, 100px); grid-template-rows: repeat(3, 100px); grid-gap: 12px; background: #4a2c12; padding: 20px; border-radius: 25px; border: 10px solid #3d240f; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
+        /* UPDATED GRID: Now 6 columns wide instead of 4 */
+        #grid { display: grid; grid-template-columns: repeat(6, 100px); grid-template-rows: repeat(3, 100px); grid-gap: 12px; background: #4a2c12; padding: 20px; border-radius: 25px; border: 10px solid #3d240f; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
         .slot { width: 100px; height: 100px; background: #795548; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 45px; cursor: pointer; position: relative; border: 4px solid transparent; transition: 0.1s; }
         .slot span { pointer-events: none; } 
 
@@ -118,7 +118,8 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
 
 <script>
     let petals = 10, tool = 0, freePacks = 0;
-    let plots = Array(12).fill(null).map(() => ({ stage: 0, type: -1, time: 0, max: 0, sur: false, dan: false }));
+    // UPDATED: Now creates 18 plots (6 columns * 3 rows)
+    let plots = Array(18).fill(null).map(() => ({ stage: 0, type: -1, time: 0, max: 0, sur: false, dan: false }));
     let eTime = 2700, qTime = 600, activeQuests = [];
 
     const plants = [
@@ -132,7 +133,8 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
 
     function init() {
         const g = document.getElementById('grid');
-        for(let i=0; i<12; i++) {
+        // UPDATED: Renders 18 slots
+        for(let i=0; i<18; i++) {
             let d = document.createElement('div');
             d.className = 'slot'; d.id = 'plot-'+i;
             d.onclick = () => doClick(i);
@@ -144,7 +146,6 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
         setInterval(save, 10000); 
     }
 
-    // FULLSCREEN FEATURE
     function toggleFullscreen() {
         if (!document.fullscreenElement) {
             document.documentElement.requestFullscreen().catch(e => alert("Fullscreen unavailable"));
@@ -153,9 +154,8 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
         }
     }
 
-    // CREDITS FEATURE
     function showCredits() {
-        showAppModal("CREDITS", "<b>Lead Developer:</b> Ashton<br><b>Version:</b> 2.6<br><br>Made for the Zen Garden Quest Expansion.");
+        showAppModal("CREDITS", "<b>Lead Developer:</b> Ashton<br><b>Version:</b> 2.7<br><br>Garden expanded to 18 plots!");
     }
 
     function tick() {
@@ -245,7 +245,10 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
             eTime = d.e || 2700;
             qTime = d.q || 600;
             document.body.className = d.mode || "";
-            if(d.plots) plots = d.plots;
+            // Ensure data fits new 18-slot grid
+            if(d.plots) {
+                for(let i=0; i<Math.min(d.plots.length, 18); i++) plots[i] = d.plots[i];
+            }
         }
     }
 
@@ -272,7 +275,7 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
             { text: "Grow a Banana", check: () => plots.some(p => p.type === 4 && p.stage === 3), reward: 5000 },
             { text: "The Survivor (Storm)", check: () => plots.filter(p => p.sur).length >= 1, reward: 3000 },
             { text: "X7 Hybrid (Disco+Storm)", check: () => plots.some(p => p.dan && p.sur), reward: 15000 },
-            { text: "The Landscaper (12 Plants)", check: () => plots.filter(p => p.stage > 0).length >= 12, reward: 10000 },
+            { text: "The Landscaper (18 Plants)", check: () => plots.filter(p => p.stage > 0).length >= 18, reward: 20000 },
             { text: "Tree Hugger (3 Oaks)", check: () => plots.filter(p => p.type === 3 && p.stage > 0).length >= 3, reward: 7500 },
             { text: "Zen Master (100k Petals)", check: () => petals >= 100000, reward: 50000 },
             { text: "Flower Garden (6 Daisies)", check: () => plots.filter(p => p.type === 1 && p.stage > 0).length >= 6, reward: 2000 }
