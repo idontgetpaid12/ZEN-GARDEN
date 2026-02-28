@@ -34,29 +34,41 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
             user-select: none; 
         }
         
-        #header { background: #fff; width: 100%; padding: 12px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; display: flex; justify-content: center; gap: 10px; align-items: center; flex-wrap: wrap; }
+        #header { background: #fff; width: 100%; padding: 12px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; display: flex; justify-content: center; gap: 10px; align-items: center; }
         #petal-display { color: #e84393; font-size: 22px; font-weight: 800; background: #fff0f5; padding: 4px 12px; border-radius: 20px; border: 2px solid #ffdeeb; }
         .timer-box { font-weight: bold; font-size: 11px; background: #f1f2f6; padding: 6px 10px; border-radius: 10px; color: #2f3542; border: 1px solid #dfe4ea; }
         
         #save-toast { position: fixed; top: 20%; background: #2ecc71; color: white; padding: 10px 25px; border-radius: 50px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transform: translateY(-100px); opacity: 0; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 2000; pointer-events: none; }
         #save-toast.show { transform: translateY(0); opacity: 1; }
 
-        .main { display: flex; flex-wrap: wrap; gap: 15px; padding: 15px; width: 98%; max-width: 1400px; justify-content: center; }
-        .sidebar { background: var(--ui-bg); padding: 12px; border-radius: 15px; width: 180px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; min-height: 480px; }
+        /* FIXED: Added white-space and flex-wrap control to keep sidebars in line */
+        .main { 
+            display: flex; 
+            flex-direction: row; /* Forces side-by-side */
+            flex-wrap: nowrap; /* Prevents Quest bar from dropping down */
+            gap: 15px; 
+            padding: 20px; 
+            width: fit-content; /* Adjusts to fit the wide garden */
+            max-width: 100vw;
+            justify-content: center; 
+            align-items: flex-start;
+        }
+
+        .sidebar { background: var(--ui-bg); padding: 12px; border-radius: 15px; width: 160px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; min-height: 480px; flex-shrink: 0; }
         
-        /* UPDATED GRID: Now 6 columns wide instead of 4 */
-        #grid { display: grid; grid-template-columns: repeat(6, 100px); grid-template-rows: repeat(3, 100px); grid-gap: 12px; background: #4a2c12; padding: 20px; border-radius: 25px; border: 10px solid #3d240f; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
-        .slot { width: 100px; height: 100px; background: #795548; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 45px; cursor: pointer; position: relative; border: 4px solid transparent; transition: 0.1s; }
+        /* GRID: 6 columns wide */
+        #grid { display: grid; grid-template-columns: repeat(6, 95px); grid-template-rows: repeat(3, 95px); grid-gap: 10px; background: #4a2c12; padding: 15px; border-radius: 25px; border: 8px solid #3d240f; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); flex-shrink: 0; }
+        .slot { width: 95px; height: 95px; background: #795548; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 40px; cursor: pointer; position: relative; border: 3px solid transparent; transition: 0.1s; }
         .slot span { pointer-events: none; } 
 
-        .item { padding: 6px; margin-bottom: 5px; border: 2px solid #eee; border-radius: 10px; cursor: pointer; font-weight: bold; text-align: center; font-size: 12px; background: white; }
+        .item { padding: 6px; margin-bottom: 5px; border: 2px solid #eee; border-radius: 10px; cursor: pointer; font-weight: bold; text-align: center; font-size: 11px; background: white; }
         .item.active { border-color: #2ecc71; background: #e8f5e9; box-shadow: 0 3px 0 #27ae60; transform: translateY(-1px); }
         
         .survivor { box-shadow: 0 0 15px #ffd700; border-color: #ffd700 !important; }
         .lets-dance span { display: inline-block; animation: dance 0.6s infinite linear; }
         @keyframes dance { 0% { transform: translateY(0); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0); } }
 
-        .progress { position: absolute; bottom: 12px; width: 60%; height: 4px; background: rgba(0,0,0,0.3); border-radius: 2px; overflow: hidden; pointer-events: none; }
+        .progress { position: absolute; bottom: 10px; width: 60%; height: 4px; background: rgba(0,0,0,0.3); border-radius: 2px; overflow: hidden; pointer-events: none; }
         .bar { height: 100%; background: #00b894; width: 0%; transition: width 0.1s linear; }
 
         #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
@@ -103,7 +115,7 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
 
     <div id="grid"></div>
 
-    <div class="sidebar" style="width: 220px;">
+    <div class="sidebar" style="width: 200px;">
         <h5 style="margin:0 0 8px 0; text-align:center;">ACTIVE QUESTS</h5>
         <div id="quest-list" style="background:#f9f9f9; padding:8px; border-radius:12px; border:1px solid #ddd; min-height: 150px; font-size: 11px; overflow-y: auto; max-height: 300px;"></div>
         
@@ -118,7 +130,6 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
 
 <script>
     let petals = 10, tool = 0, freePacks = 0;
-    // UPDATED: Now creates 18 plots (6 columns * 3 rows)
     let plots = Array(18).fill(null).map(() => ({ stage: 0, type: -1, time: 0, max: 0, sur: false, dan: false }));
     let eTime = 2700, qTime = 600, activeQuests = [];
 
@@ -133,7 +144,6 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
 
     function init() {
         const g = document.getElementById('grid');
-        // UPDATED: Renders 18 slots
         for(let i=0; i<18; i++) {
             let d = document.createElement('div');
             d.className = 'slot'; d.id = 'plot-'+i;
@@ -155,7 +165,7 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
     }
 
     function showCredits() {
-        showAppModal("CREDITS", "<b>Lead Developer:</b> Ashton<br><b>Version:</b> 2.7<br><br>Garden expanded to 18 plots!");
+        showAppModal("CREDITS", "<b>Lead Developer:</b> Ashton<br><b>Version:</b> 2.8<br><br>Fixed sidebar layout for wide gardens!");
     }
 
     function tick() {
@@ -245,7 +255,6 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
             eTime = d.e || 2700;
             qTime = d.q || 600;
             document.body.className = d.mode || "";
-            // Ensure data fits new 18-slot grid
             if(d.plots) {
                 for(let i=0; i<Math.min(d.plots.length, 18); i++) plots[i] = d.plots[i];
             }
