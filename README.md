@@ -11,348 +11,233 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
 * **License:** MIT License
 * Created for the Zen Coding Community.
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>ZEN GARDEN: BY ASHTON (INSTANT COLLECT)</title>
+    <meta charset="UTF-8">
+    <title>Zen Garden: Quest Master</title>
     <style>
-        :root { --dirt: #5d3a1a; --grass: #2d5a27; --gold: #ffd700; --banana: #f1c40f; --ui-bg: #ffffff; }
-        
-        body { 
-            background: #a8dadc; 
-            font-family: 'Segoe UI', sans-serif; 
-            margin: 0; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            transition: background 1s; 
-            overflow-y: auto; 
-            min-height: 100vh;
-            user-select: none; 
+        :root { --p-pink: #ff74b1; --p-purple: #6c5ce7; --gold: #ffd700; --dirt: #4a2c12; }
+        .zen-site-wrapper {
+            width: 100%; max-width: 1000px; margin: 10px auto; background: #a8dadc;
+            font-family: 'Arial Black', sans-serif; border-radius: 25px; border: 6px solid #3d240f;
+            display: flex; flex-direction: column; overflow: hidden; user-select: none;
         }
-        
-        #header { background: #fff; width: 100%; padding: 12px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; display: flex; justify-content: center; gap: 10px; align-items: center; }
-        #petal-display { color: #e84393; font-size: 22px; font-weight: 800; background: #fff0f5; padding: 4px 12px; border-radius: 20px; border: 2px solid #ffdeeb; }
-        .timer-box { font-weight: bold; font-size: 11px; background: #f1f2f6; padding: 6px 10px; border-radius: 10px; color: #2f3542; border: 1px solid #dfe4ea; min-width: 100px;}
-        
-        #save-toast { position: fixed; top: 20%; background: #2ecc71; color: white; padding: 10px 25px; border-radius: 50px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transform: translateY(-100px); opacity: 0; transition: 0.4s; z-index: 2000; pointer-events: none; }
-        #save-toast.show { transform: translateY(0); opacity: 1; }
-
-        .main { display: flex; flex-direction: row; flex-wrap: nowrap; gap: 15px; padding: 20px; width: fit-content; max-width: 100vw; justify-content: center; align-items: flex-start; }
-        
-        /* SHOP SIDEBAR - WHITE */
-        .sidebar { background: var(--ui-bg); padding: 15px; border-radius: 15px; width: 160px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); border: 1px solid #eee; display: flex; flex-direction: column; min-height: 480px; flex-shrink: 0; }
-        .item { padding: 10px; margin: 4px 0; border-radius: 8px; cursor: pointer; transition: 0.2s; border: 1px solid #f0f0f0; font-weight: 500; font-size: 13px; background: #fff; }
-        .item:hover { background: #f8f9fa; transform: translateX(5px); }
-        .item.active { background: #e3f2fd; border-color: #2196f3; color: #1976d2; }
-
-        #grid { 
-            display: grid; grid-template-columns: repeat(6, 95px); grid-template-rows: repeat(3, 95px); grid-gap: 10px; 
-            background: #4a2c12; padding: 15px; border-radius: 25px; border: 8px solid #3d240f; 
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5); position: relative; overflow: hidden;
+        #zen-header { 
+            background: white; padding: 15px; display: flex; flex-wrap: wrap; 
+            justify-content: center; gap: 15px; align-items: center; border-bottom: 3px solid #ddd;
         }
-
-        .row-dancer { position: absolute; font-size: 50px; z-index: 1000; pointer-events: none; left: -80px; transition: left 3s linear; display: none; }
-        .slot { width: 95px; height: 95px; background: #795548; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 40px; cursor: pointer; position: relative; border: 3px solid transparent; transition: 0.1s; }
-        
-        .survivor { box-shadow: 0 0 15px #ffd700; border-color: #ffd700 !important; }
-        .lets-dance { animation: rainbow 2s infinite linear, glow 0.5s infinite alternate; }
-        .lets-dance span { display: inline-block; animation: dance 0.6s infinite linear; }
-
-        @keyframes dance { 0% { transform: translateY(0); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0); } }
-        @keyframes glow { from { transform: scale(1); } to { transform: scale(1.05); } }
-        @keyframes rainbow {
-            0% { filter: hue-rotate(0deg) drop-shadow(0 0 10px red); }
-            33% { filter: hue-rotate(120deg) drop-shadow(0 0 10px lime); }
-            66% { filter: hue-rotate(240deg) drop-shadow(0 0 10px blue); }
-            100% { filter: hue-rotate(360deg) drop-shadow(0 0 10px red); }
+        #p-count { color: var(--p-pink); font-size: 24px; background: #fff0f5; padding: 5px 20px; border-radius: 50px; border: 3px solid #ffdeeb; }
+        .timer-box { background: #f1f2f6; padding: 8px 15px; border-radius: 12px; font-size: 11px; border: 1px solid #ccc; font-weight: bold; min-width: 110px; text-align: center; }
+        #game-log { background: #2d3436; color: #00ff88; padding: 10px; font-family: monospace; font-size: 12px; text-align: center; min-height: 15px; text-transform: uppercase; }
+        .zen-main { display: flex; padding: 20px; gap: 20px; justify-content: center; }
+        #zen-grid { 
+            display: grid; grid-template-columns: repeat(4, 1fr); grid-gap: 12px; 
+            background: var(--dirt); padding: 20px; border-radius: 25px; border: 10px solid #3d240f;
+            width: 100%; max-width: 480px; box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
         }
-
-        .progress { position: absolute; bottom: 10px; width: 60%; height: 4px; background: rgba(0,0,0,0.3); border-radius: 2px; overflow: hidden; }
-        .bar { height: 100%; background: #00b894; width: 0%; transition: width 0.1s linear; }
-
-        #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
-        .modal-content { background: white; padding: 25px; border-radius: 20px; width: 260px; text-align: center; }
-        .modal-btn { background: #6c5ce7; color: white; border: none; padding: 10px; border-radius: 10px; cursor: pointer; margin-top: 10px; font-weight: bold; width: 100%; }
-
-        body.storm { background: #2d3436 !important; }
-        body.disco { animation: disco-bg 1s infinite alternate; }
-        @keyframes disco-bg { 0% { background: #ff00ff; } 50% { background: #00ffff; } 100% { background: #ffff00; } }
-        
-        .quest-item { background: white; border: 1px solid #eee; border-radius: 8px; padding: 8px; margin-bottom: 8px; transition: 0.3s; }
-        .quest-done { background: #e8f5e9; border-color: #2ecc71; color: #27ae60; text-decoration: line-through; }
+        .slot { 
+            aspect-ratio: 1/1; background: #795548; border-radius: 15px; 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 40px; cursor: pointer; position: relative; border: 4px solid transparent; 
+        }
+        .zen-side { background: white; padding: 15px; border-radius: 20px; width: 190px; display: flex; flex-direction: column; gap: 8px; }
+        .zen-btn { padding: 10px; border-radius: 12px; border: 3px solid #eee; cursor: pointer; font-weight: bold; font-size: 11px; background: white; transition: 0.2s; }
+        .zen-btn.active { border-color: #2ecc71; background: #e8f5e9; }
+        .p-bar-wrap { position: absolute; bottom: 10px; width: 70%; height: 7px; background: rgba(0,0,0,0.5); border-radius: 4px; overflow: hidden; pointer-events: none; }
+        .p-bar-fill { height: 100%; background: #00ff88; width: 0%; }
+        .zen-site-wrapper.storm { background: #2d3436 !important; }
+        .zen-site-wrapper.disco { animation: disco-bg 0.5s infinite alternate; }
+        @keyframes disco-bg { from { background: #ff9ff3; } to { background: #7ed6df; } }
+        .survivor { border-color: var(--gold) !important; box-shadow: 0 0 15px var(--gold); }
+        .lets-dance span { display: inline-block; animation: dance 0.5s infinite alternate; }
+        @keyframes dance { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+        @media (max-width: 800px) { .zen-main { flex-direction: column; align-items: center; } }
     </style>
 </head>
 <body onload="init()">
 
-<div id="save-toast">Saved! =)</div>
-
-<div id="modal-overlay" onclick="closeModal()">
-    <div class="modal-content" id="modal-box" onclick="event.stopPropagation()">
-        <h2 id="modal-title" style="margin:0"></h2>
-        <div id="modal-body"></div>
-        <button class="modal-btn" onclick="closeModal()">OK</button>
-    </div>
-</div>
-
-<div id="header">
-    <div id="petal-display">🌸 <span id="p-count">10</span></div>
-    <div class="timer-box" id="timer-label">🌊 WAVE IN: <span id="timer-event">45:00</span></div>
-    <div class="timer-box">📜 REFRESH: <span id="timer-quest">10:00</span></div>
-    <button onclick="manualSave()" style="background:#2ecc71; color:white; border:none; padding:8px 15px; border-radius:12px; cursor:pointer; font-weight:bold;">💾 SAVE</button>
-    <button onclick="openCodeApp()" style="background:#6c5ce7; color:white; border:none; padding:8px 12px; border-radius:12px; cursor:pointer;">🔑 CODE</button>
-</div>
-
-<div class="main">
-    <div class="sidebar">
-        <h3 style="margin:0 0 10px 0; text-align:center; color:#333; font-size: 16px;">GARDEN SHOP</h3>
-        <div class="item active" onclick="setTool(0)">🌱 Grass (10)</div>
-        <div class="item" onclick="setTool(1)">🌼 Daisy (25)</div>
-        <div class="item" onclick="setTool(2)">🌷 Tulip (120)</div>
-        <div class="item" onclick="setTool(3)">🌳 Oak (2k)</div>
-        <div class="item" onclick="setTool(4)" style="color: #8a6d3b;">🍌 Banana (8k)</div>
-        <div class="item" onclick="setTool(5)" style="color: #f1c40f;">🍋 Lemon (25k)</div>
-        <div class="item" id="shovel-btn" style="background:#ff7675; color:white; margin-top: auto; text-align: center;" onclick="setTool(-1)">🗑️ SHOVEL</div>
+<div class="zen-site-wrapper" id="game-container">
+    <div id="zen-header">
+        <div id="p-count">🌸 10</div>
+        <div class="timer-box" id="ev-label">EVENT: --:--</div>
+        <div class="timer-box" id="q-label" style="color:var(--p-purple)">QUESTS: --:--</div>
+        <button onclick="save(true)" class="zen-btn" style="background:#2ecc71; color:white; border:none; padding:10px 15px;">SAVE</button>
+        <input type="text" id="code-in" placeholder="CODE" style="width:70px; padding:8px; border-radius:10px; border:1px solid #ccc; font-size:10px;">
+        <button onclick="applyCode()" class="zen-btn" style="background:var(--p-purple); color:white; border:none; padding:10px 15px;">OK</button>
     </div>
 
-    <div id="grid">
-        <div id="rd-0" class="row-dancer" style="top: 25px;">🕺</div>
-        <div id="rd-1" class="row-dancer" style="top: 130px;">💃</div>
-        <div id="rd-2" class="row-dancer" style="top: 235px;">🕺</div>
-    </div>
+    <div id="game-log">WELCOME BACK TO THE GARDEN</div>
 
-    <div class="sidebar" style="width: 200px;">
-        <h3 style="margin:0 0 10px 0; text-align:center; color:#333; font-size: 16px;">QUESTS</h3>
-        <div id="quest-list" style="background:#fcfcfc; padding:8px; border-radius:12px; border:1px solid #ddd; min-height: 150px; font-size: 11px; overflow-y: auto; max-height: 300px;"></div>
-        <button class="item" onclick="buyPack()" style="width:100%; background:linear-gradient(45deg, #f0932b, #ffbe76); color:white; border:none; position:relative; margin-top:10px; font-weight: bold;">
-            🎁 GIFT PACK (1k)
-        </button>
+    <div class="zen-main">
+        <div class="zen-side">
+            <div class="zen-btn active" id="t0" onclick="setTool(0)">🌱 Grass (10)</div>
+            <div class="zen-btn" id="t1" onclick="setTool(1)">🌼 Daisy (25)</div>
+            <div class="zen-btn" id="t2" onclick="setTool(2)">🌷 Tulip (120)</div>
+            <div class="zen-btn" id="t3" onclick="setTool(3)">🌳 Oak (2k)</div>
+            <div class="zen-btn" id="t4" onclick="setTool(4)">🍌 Banana (8k)</div>
+            <div class="zen-btn" id="t5" onclick="setTool(5)">🍋 Lemon (25k)</div>
+            <button class="zen-btn" onclick="setTool(-1)" style="background:#ff7675; color:white; border:none;">🗑️ SHOVEL</button>
+        </div>
+
+        <div id="zen-grid"></div>
+
+        <div class="zen-side">
+            <h4 style="margin:0; font-size:12px;">ACTIVE QUESTS</h4>
+            <div id="quest-list" style="font-size:10px; color:#444;"></div>
+            <button class="zen-btn" onclick="buyPack()" style="background:orange; color:white; border:none; margin-top:10px;">🎁 OPEN PACK (1k)</button>
+        </div>
     </div>
 </div>
 
 <script>
-    let petals = 10, tool = 0;
-    let totalHarvested = 0;
-    let plots = Array(18).fill(null).map(() => ({ stage: 0, type: -1, time: 0, max: 0, sur: false, dan: false }));
-    let eTime = 2700, qTime = 600, subTimer = 0, activeQuests = [];
-    let state = "WAIT_STORM";
-
+    let petals = 10, tool = 0, harvested = 0;
+    let plots = Array(16).fill(null).map(() => ({ stage: 0, type: -1, time: 0, max: 0, sur: false, dan: false }));
+    let eTime = 2700, qTime = 600, quests = [], mode = "";
     const plants = [
-        { icon: "🌱", cost: 10, rev: 20, t: 5 },
-        { icon: "🌼", cost: 25, rev: 50, t: 12 },
-        { icon: "🌷", cost: 120, rev: 240, t: 25 },
-        { icon: "🌳", cost: 2000, rev: 1000, t: 60 },
-        { icon: "🍌", cost: 8000, rev: 3500, t: 45 },
-        { icon: "🍋", cost: 25000, rev: 10000, t: 90 }
+        { i: "🌱", c: 10, r: 25, t: 5 }, { i: "🌼", c: 25, r: 60, t: 12 },
+        { i: "🌷", c: 120, r: 300, t: 30 }, { i: "🌳", c: 2000, r: 5000, t: 120 },
+        { i: "🍌", c: 8000, r: 18000, t: 300 }, { i: "🍋", c: 25000, r: 60000, t: 600 }
     ];
 
     function init() {
-        const g = document.getElementById('grid');
-        for(let i=0; i<18; i++) {
+        const g = document.getElementById('zen-grid');
+        for(let i=0; i<16; i++) {
             let d = document.createElement('div');
-            d.className = 'slot'; d.id = 'plot-'+i;
-            d.onclick = () => doClick(i);
+            d.className='slot'; d.id='s'+i; d.onclick=()=>tap(i);
             g.appendChild(d);
         }
         load();
-        if(activeQuests.length === 0) genQuests();
+        if(quests.length === 0) genQuests();
         setInterval(tick, 100);
-        setInterval(save, 5000); 
+        setInterval(()=>save(false), 30000);
     }
 
-    function processOfflineTime(seconds) {
-        if (seconds <= 0) return;
-        eTime -= seconds;
-        if (eTime < 0) eTime = 10;
-        plots.forEach((p) => {
-            let remaining = seconds;
-            while(remaining > 0 && p.stage > 0 && p.stage < 3) {
-                if (remaining >= p.time) {
-                    remaining -= p.time;
-                    p.stage++;
-                    if (p.stage < 3) { p.time = plants[p.type].t; p.max = p.time; }
-                    else { p.time = 0; }
-                } else { p.time -= remaining; remaining = 0; }
-            }
-        });
-    }
+    function log(msg) { document.getElementById('game-log').innerText = msg; }
 
     function tick() {
         eTime -= 0.1; qTime -= 0.1;
+        if(eTime <= 0) cycle();
         if(qTime <= 0) genQuests();
-        
-        if(eTime <= 0) {
-            if(state === "WAIT_STORM") {
-                state = "STORM"; eTime = 60; document.body.className = "storm";
-                plots.forEach(p => { if(p.stage > 0) p.sur = true; });
-            } else if(state === "STORM") {
-                state = "WAIT_DISCO"; eTime = 1800; document.body.className = "";
-            } else if(state === "WAIT_DISCO") {
-                triggerDisco();
-            } else if(state === "DISCO") {
-                state = "WAIT_STORM"; eTime = 2700; document.body.className = "";
-            }
-        }
-
-        if(state === "DISCO") {
-            subTimer -= 0.1;
-            if(subTimer <= 0) { triggerRowDancers(); subTimer = 60; }
-        }
-
-        checkQuests();
-        updateUI();
         plots.forEach((p, i) => {
             if(p.stage > 0 && p.stage < 3) {
                 p.time -= 0.1;
-                if(p.time <= 0) { p.stage++; p.time = (p.stage < 3) ? plants[p.type].t : 0; p.max = (p.stage < 3) ? p.time : 0; }
+                if(p.time <= 0) { p.stage++; p.time = (p.stage < 3) ? plants[p.type].t : 0; p.max = p.time; }
             }
-            renderPlot(i);
+            render(i);
         });
-    }
-
-    function triggerDisco() {
-        state = "DISCO"; eTime = 300;
-        document.body.className = "disco";
-        subTimer = 0;
+        checkQuests();
+        updateUI();
     }
 
     function updateUI() {
-        let lbl = document.getElementById('timer-label');
-        if(state === "WAIT_STORM") lbl.innerHTML = `🌊 WAVE IN: <span id="timer-event"></span>`;
-        if(state === "STORM") lbl.innerHTML = `⚠️ STORM: <span id="timer-event"></span>`;
-        if(state === "WAIT_DISCO") lbl.innerHTML = `🕺 DISCO IN: <span id="timer-event"></span>`;
-        if(state === "DISCO") lbl.innerHTML = `✨ PARTY!: <span id="timer-event"></span>`;
-
-        document.getElementById('p-count').innerText = Math.floor(petals).toLocaleString();
-        let displayE = Math.max(0, eTime);
-        document.getElementById('timer-event').innerText = Math.floor(displayE/60) + ":" + Math.floor(displayE%60).toString().padStart(2, '0');
-        document.getElementById('timer-quest').innerText = Math.max(0, Math.floor(qTime/60)) + ":" + Math.max(0, Math.floor(qTime%60)).toString().padStart(2, '0');
+        document.getElementById('p-count').innerText = "🌸 " + Math.floor(petals).toLocaleString();
+        document.getElementById('ev-label').innerText = (mode===""?"WAVE":mode.toUpperCase()) + ": " + fmt(eTime);
+        document.getElementById('q-label').innerText = "REFRESH: " + fmt(qTime);
     }
 
-    function triggerRowDancers() {
-        for(let r=0; r<3; r++) {
-            let rd = document.getElementById('rd-' + r);
-            rd.style.display = "block"; rd.style.left = "-80px";
-            setTimeout(() => { rd.style.left = "700px"; }, 50);
-            setTimeout(() => {
-                for(let c=0; c<6; c++) {
-                    let idx = (r * 6) + c;
-                    if(plots[idx].stage > 0 && !plots[idx].dan && Math.random() < 0.3) {
-                        plots[idx].dan = true; renderPlot(idx);
-                    }
-                }
-            }, 1500);
-            setTimeout(() => { rd.style.display = "none"; }, 3000);
-        }
-    }
+    function fmt(s) { let m=Math.max(0, Math.floor(s/60)); let sec=Math.max(0, Math.floor(s%60)); return m+":"+sec.toString().padStart(2,'0'); }
 
-    // UPDATED DO_CLICK: Fixed for instant one-click collection
-    function doClick(i) {
+    function tap(i) {
         let p = plots[i];
+        if(tool === -1) { plots[i] = { stage: 0, type: -1, time: 0, max: 0, sur: false, dan: false }; return; }
         
-        // 1. Shovel Tool
-        if(tool === -1) { resetPlot(i); return; }
-        
-        // 2. Collection (If stage 3, collect immediately)
         if(p.stage === 3) {
-            let mult = (p.sur ? 3 : 1) + (p.dan ? 10 : 0);
-            petals += (plants[p.type].rev * mult);
-            totalHarvested++;
-            resetPlot(i);
-            renderPlot(i);
-            return;
-        }
-        
-        // 3. Planting
-        if(p.stage === 0 && petals >= plants[tool].cost) {
-            petals -= plants[tool].cost;
-            p.type = tool; 
-            p.stage = 1; 
-            p.time = plants[tool].t; 
-            p.max = p.time;
-            renderPlot(i);
+            let mult = (p.sur ? 3 : 1) + (p.dan ? 5 : 0);
+            petals += (plants[p.type].r * mult);
+            harvested++;
+            plots[i] = { stage: 0, type: -1, time: 0, max: 0, sur: false, dan: false };
+            log("HARVESTED: +🌸" + (plants[p.type].r * mult));
+        } else if(p.stage === 0) {
+            if(petals >= plants[tool].c) {
+                petals -= plants[tool].c;
+                p.type = tool; p.stage = 1; p.time = plants[tool].t; p.max = p.time;
+                p.dan = (mode === "disco"); p.sur = (mode === "storm");
+            } else { log("NOT ENOUGH PETALS!"); }
         }
     }
 
-    function renderPlot(i) {
-        let p = plots[i], el = document.getElementById('plot-'+i);
+    function render(i) {
+        let p = plots[i], el = document.getElementById('s'+i);
         el.className = 'slot' + (p.sur ? ' survivor' : '') + (p.dan ? ' lets-dance' : '');
         if(p.stage === 0) { el.innerHTML = ""; return; }
-        let icon = p.stage === 3 ? plants[p.type].icon : (p.stage === 2 ? "🌿" : "🍃");
-        el.innerHTML = `<span>${icon}</span>` + (p.stage < 3 ? `<div class="progress"><div class="bar" style="width:${((p.max-p.time)/p.max)*100}%"></div></div>` : "");
+        let icon = p.stage === 3 ? plants[p.type].i : (p.stage === 2 ? "🌿" : "🍃");
+        el.innerHTML = `<span>${icon}</span>` + (p.stage < 3 ? `<div class="p-bar-wrap"><div class="p-bar-fill" style="width:${((p.max-p.time)/p.max)*100}%"></div></div>` : "");
     }
-
-    function resetPlot(i) { plots[i] = { stage: 0, type: -1, time: 0, max: 0, sur: false, dan: false }; }
-    function setTool(idx) { tool = idx; document.querySelectorAll('.sidebar .item').forEach((el, i) => { if(i < 7) el.classList.toggle('active', (idx === -1 && i === 6) || (idx === i)); }); }
 
     function genQuests() {
         qTime = 600;
         const pool = [
-            { id: 1, text: "Fill the whole Garden", check: () => plots.every(p => p.stage > 0), reward: 500 },
-            { id: 2, text: "Find 3 Dancers", check: () => plots.filter(p => p.dan).length >= 3, reward: 2000 },
-            { id: 3, text: "Harvest 10 Plants", check: () => totalHarvested >= 10, reward: 300 },
-            { id: 4, text: "Save up 5,000 Petals", check: () => petals >= 5000, reward: 1000 },
-            { id: 5, text: "Survive a Storm", check: () => state === "WAIT_DISCO", reward: 800 }
+            { t: "Grow 3 Oaks 🌳", c: () => plots.filter(x => x.type === 3).length >= 3, r: 2500 },
+            { t: "Harvest 10 Times", c: () => harvested >= 10, r: 1000 },
+            { t: "Find a Dancer 🕺", c: () => plots.some(x => x.dan), r: 5000 },
+            { t: "Grow 2 Bananas 🍌", c: () => plots.filter(x => x.type === 4).length >= 2, r: 8000 },
+            { t: "Garden Full 🌸", c: () => plots.every(x => x.stage > 0), r: 1500 },
+            // --- 5 NEW QUESTS ADDED HERE ---
+            { t: "Lemon Squeezer 🍋", c: () => plots.some(x => x.type === 5 && x.stage === 3), r: 20000 },
+            { t: "Storm Survivor ⛈️", c: () => plots.some(x => x.sur && x.stage === 3), r: 4000 },
+            { t: "Grass Field 🌱", c: () => plots.filter(x => x.type === 0 && x.stage === 3).length >= 6, r: 500 },
+            { t: "Petal Millionaire", c: () => petals >= 1000000, r: 50000 },
+            { t: "Tulip Collector 🌷", c: () => plots.filter(x => x.type === 2).length >= 4, r: 3000 }
         ];
-        activeQuests = pool.sort(() => 0.5 - Math.random()).slice(0, 3).map(q => ({...q, done: false}));
-        renderQuestsUI();
+        quests = pool.sort(() => 0.5 - Math.random()).slice(0, 3).map(q => ({...q, done: false}));
+        renderQuests();
+        log("NEW QUESTS ARRIVED!");
     }
 
-    function checkQuests() {
-        activeQuests.forEach(q => {
-            if(!q.done && q.check()) {
-                q.done = true;
-                petals += q.reward;
-                renderQuestsUI();
-            }
-        });
-    }
-
-    function renderQuestsUI() {
+    function renderQuests() {
         let h = "";
-        activeQuests.forEach(q => {
-            h += `<div class="quest-item ${q.done?'quest-done':''}">
-                    <b>${q.done?'✓':'•'} ${q.text}</b><br>
-                    <span style="font-size:9px; color:#888;">Reward: 🌸 ${q.reward}</span>
-                  </div>`;
-        });
+        quests.forEach(q => h += `<div style="margin-bottom:8px; padding-bottom:4px; border-bottom:1px solid #eee; ${q.done?'color:#2ecc71;text-decoration:line-through':''}">• ${q.t}<br><b>+🌸${q.r}</b></div>`);
         document.getElementById('quest-list').innerHTML = h;
     }
 
-    function openCodeApp() {
-        showAppModal("SECRET CODE", `<input type="text" id="code-input" placeholder="..." style="width:80%; padding:8px; text-align:center; border:2px solid #ddd; border-radius:10px;"><button class="modal-btn" style="background:#2ecc71" onclick="submitCode()">GO</button>`);
+    function checkQuests() { quests.forEach(q => { if(!q.done && q.c()) { petals += q.r; q.done = true; renderQuests(); log("QUEST COMPLETE: +🌸"+q.r); } }); }
+    function setTool(id) { tool = id; document.querySelectorAll('.zen-btn').forEach((b, i) => { if(i<6) b.classList.toggle('active', i===id); }); }
+    function buyPack() { if(petals >= 1000) { petals -= 1000; let win = Math.floor(Math.random() * 3000) + 1200; petals += win; log("PACK OPENED: +🌸"+win); } }
+
+    function cycle() {
+        const wrap = document.getElementById('game-container');
+        if(mode === "") { mode = "storm"; eTime = 60; wrap.className = "zen-site-wrapper storm"; plots.forEach(p => { if(p.stage > 0) p.sur = true; }); log("STORM WARNING!"); }
+        else if(mode === "storm") { mode = "wait"; eTime = 1800; wrap.className = "zen-site-wrapper"; log("STORM PASSED"); }
+        else if(mode === "wait") { mode = "disco"; eTime = 300; wrap.className = "zen-site-wrapper disco"; log("DISCO TIME!"); }
+        else { mode = ""; eTime = 2700; wrap.className = "zen-site-wrapper"; log("CALM WEATHER"); }
     }
 
-    function submitCode() {
-        let val = document.getElementById('code-input').value.toUpperCase();
-        if(val === "MANILOVETHISGAME") { triggerDisco(); closeModal(); save(); }
-        if(val === "PEPSI6") { petals += 1000000; closeModal(); }
+    function applyCode() {
+        let c = document.getElementById('code-in').value.toUpperCase();
+        if(c === "PEPSI6") { petals += 1000000; log("CODE: 1,000,000 PETALS!"); }
+        else if(c === "MANILOVETHISGAME") { mode = "disco"; eTime = 300; document.getElementById('game-container').className = "zen-site-wrapper disco"; log("CODE: DISCO ACTIVE"); }
+        else { log("INVALID CODE"); }
+        document.getElementById('code-in').value = "";
     }
 
-    function showAppModal(title, body) { document.getElementById('modal-title').innerText = title; document.getElementById('modal-body').innerHTML = body; document.getElementById('modal-overlay').style.display = "flex"; }
-    function closeModal() { document.getElementById('modal-overlay').style.display = "none"; }
-    function manualSave() { save(); const t = document.getElementById('save-toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
-    
-    function save() { 
-        localStorage.setItem('ZEN_INSTANT_V1', JSON.stringify({ 
-            p: petals, plots: plots, state: state, e: eTime, h: totalHarvested, q: activeQuests, last: Date.now() 
-        })); 
+    function save(manual) { 
+        localStorage.setItem('ZEN_V17', JSON.stringify({ p: petals, plots, ts: Date.now(), h: harvested, m: mode, e: eTime, qT: qTime, qs: quests })); 
+        if(manual) log("saved =)"); 
     }
 
     function load() {
-        let s = localStorage.getItem('ZEN_INSTANT_V1');
-        if(s) {
-            let d = JSON.parse(s); 
-            petals = d.p; eTime = d.e; totalHarvested = d.h || 0;
-            state = d.state || "WAIT_STORM";
-            if(d.plots) plots = d.plots;
-            if(d.q) activeQuests = d.q;
-            if(d.last) { processOfflineTime((Date.now() - d.last) / 1000); }
-            if(state === "DISCO") document.body.className = "disco";
-            if(state === "STORM") document.body.className = "storm";
-            renderQuestsUI();
+        let s = localStorage.getItem('ZEN_V17');
+        if(!s) return;
+        let d = JSON.parse(s);
+        petals = d.p; plots = d.plots; harvested = d.h; mode = d.m; eTime = d.e; qTime = d.qT || 600; quests = d.qs || [];
+        if(d.ts) {
+            let diff = Math.floor((Date.now() - d.ts) / 1000);
+            if(diff > 10) {
+                let grown = 0;
+                plots.forEach(p => {
+                    if(p.stage > 0 && p.stage < 3) {
+                        let rem = diff;
+                        while(rem > 0 && p.stage < 3) {
+                            if(rem >= p.time) { rem -= p.time; p.stage++; grown++; p.time = (p.stage < 3) ? plants[p.type].t : 0; p.max = p.time; }
+                            else { p.time -= rem; rem = 0; }
+                        }
+                    }
+                });
+                log("OFFLINE: " + grown + " STAGES GROWN!");
+            }
         }
+        renderQuests();
     }
-    function buyPack() { if(petals >= 1000) { petals -= 1000; alert("Quests reset!"); genQuests(); } }
 </script>
 </body>
 </html>
