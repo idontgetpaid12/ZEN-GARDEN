@@ -41,7 +41,6 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
         .zen-site-wrapper { 
             width: 100%; 
             max-width: 1100px; 
-            max-height: 98vh; 
             background: #f0f2f5; 
             border-radius: 25px; 
             border: 6px solid #3d240f; 
@@ -59,11 +58,36 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
         /* LOG */
         #game-log { background: #2d3436; color: #00ff88; padding: 8px; font-family: monospace; font-size: 11px; text-align: center; text-transform: uppercase; height: 35px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
-        /* GAME AREA */
-        .zen-main { display: flex; padding: 15px; gap: 15px; flex-wrap: wrap; justify-content: center; overflow-y: auto; flex-grow: 1; }
+        /* GAME AREA - Changed to Column to stack Shop, Grid, and Quests */
+        .zen-main { 
+            display: flex; 
+            flex-direction: column; 
+            padding: 15px; 
+            gap: 15px; 
+            align-items: center; 
+            overflow-y: auto; 
+            flex-grow: 1; 
+        }
 
-        /* SIDEBARS */
-        .zen-side { background: var(--ui-bg); padding: 12px; border-radius: 20px; width: 100%; max-width: 190px; display: flex; flex-direction: column; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        /* SIDEBARS - Now Bottom Bars */
+        .zen-side { 
+            background: var(--ui-bg); 
+            padding: 12px; 
+            border-radius: 20px; 
+            width: 100%; 
+            max-width: 600px; /* Wider to look better at the bottom */
+            display: flex; 
+            flex-direction: column; 
+            gap: 6px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
+        }
+
+        /* Adjust Shop/Quests internal layout to be more horizontal */
+        .button-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 5px;
+        }
         
         .zen-btn { padding: 8px; border-radius: 10px; border: 2px solid #eee; cursor: pointer; font-weight: bold; font-size: 11px; background: white; transition: 0.1s; width: 100%; }
         .zen-btn:active { transform: scale(0.95); }
@@ -72,8 +96,8 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
         /* GRID */
         #zen-grid { 
             display: grid; 
-            grid-template-columns: repeat(4, clamp(60px, 9vw, 95px)); 
-            grid-template-rows: repeat(4, clamp(60px, 9vw, 95px));
+            grid-template-columns: repeat(4, clamp(65px, 12vw, 95px)); 
+            grid-template-rows: repeat(4, clamp(65px, 12vw, 95px));
             grid-gap: 10px; 
             background: var(--dirt); 
             padding: 15px; 
@@ -86,23 +110,15 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
         .slot { background: #795548; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: clamp(25px, 6vw, 45px); cursor: pointer; position: relative; transition: 0.2s; }
         .slot:hover { background: #8d6e63; }
 
-        /* PROGRESS BAR */
         .p-bar-wrap { position: absolute; bottom: 5px; width: 80%; height: 5px; background: rgba(0,0,0,0.3); border-radius: 4px; overflow: hidden; pointer-events: none; }
         .p-bar-fill { height: 100%; background: #00ff88; width: 0%; }
         
-        /* SPECIAL EFFECTS */
         .zen-site-wrapper.storm { background: #2d3436 !important; }
         .zen-site-wrapper.disco { animation: disco-bg 0.5s infinite alternate; }
         @keyframes disco-bg { from { background: #ff9ff3; } to { background: #7ed6df; } }
         .survivor { border-color: var(--gold) !important; box-shadow: 0 0 10px var(--gold); border: 3px solid; }
         .lets-dance span { display: inline-block; animation: dance 0.5s infinite alternate; }
         @keyframes dance { from { transform: translateY(0); } to { transform: translateY(-6px); } }
-
-        @media (max-width: 850px) {
-            .zen-main { flex-direction: column; align-items: center; }
-            .zen-side { max-width: 100%; order: 2; }
-            #zen-grid { order: 1; }
-        }
     </style>
 </head>
 <body onload="init()">
@@ -129,28 +145,32 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
     <div class="zen-main">
         <div class="zen-side">
             <h5 style="text-align:center; margin:0;">SHOP</h5>
-            <div class="zen-btn active" id="t0" onclick="setTool(0)">🌱 Grass (10)</div>
-            <div class="zen-btn" id="t1" onclick="setTool(1)">🌼 Daisy (25)</div>
-            <div class="zen-btn" id="t2" onclick="setTool(2)">🌷 Tulip (120)</div>
-            <div class="zen-btn" id="t3" onclick="setTool(3)">🌳 Oak (2k)</div>
-            <div class="zen-btn" id="t4" onclick="setTool(4)">🍌 Banana (8k)</div>
-            <div class="zen-btn" id="t5" onclick="setTool(5)">🍋 Lemon (25k)</div>
-            <hr style="width:100%; opacity:0.2;">
-            <button class="zen-btn" onclick="plantAll()" style="background:#6c5ce7; color:white; border:none;">🚜 PLANT ALL</button>
-            <button class="zen-btn" onclick="harvestAll()" style="background:#00ff88; color:#333; border:none;">✨ HARVEST ALL</button>
-            <button class="zen-btn" id="t-1" onclick="setTool(-1)" style="background:#ff7675; color:white; border:none;">🗑️ SHOVEL</button>
+            <div class="button-row">
+                <div class="zen-btn active" id="t0" onclick="setTool(0)">🌱 Grass (10)</div>
+                <div class="zen-btn" id="t1" onclick="setTool(1)">🌼 Daisy (25)</div>
+                <div class="zen-btn" id="t2" onclick="setTool(2)">Tulip (120)</div>
+                <div class="zen-btn" id="t3" onclick="setTool(3)">🌳 Oak (2k)</div>
+                <div class="zen-btn" id="t4" onclick="setTool(4)">🍌 Banana (8k)</div>
+                <div class="zen-btn" id="t5" onclick="setTool(5)">🍋 Lemon (25k)</div>
+            </div>
+            <div class="button-row">
+                <button class="zen-btn" onclick="plantAll()" style="background:#6c5ce7; color:white; border:none;">🚜 PLANT ALL</button>
+                <button class="zen-btn" onclick="harvestAll()" style="background:#00ff88; color:#333; border:none;">✨ HARVEST ALL</button>
+                <button class="zen-btn" id="t-1" onclick="setTool(-1)" style="background:#ff7675; color:white; border:none;">🗑️ SHOVEL</button>
+            </div>
         </div>
 
         <div id="zen-grid"></div>
 
         <div class="zen-side">
             <h5 style="text-align:center; margin:0;">QUESTS</h5>
-            <div id="quest-list" style="background:#f9f9f9; padding:8px; border-radius:12px; border:1px solid #ddd; min-height: 120px; font-size: 11px;"></div>
-            <button class="zen-btn" onclick="buyPack()" style="background:orange; color:white; border:none; margin-top:5px;">🎁 PACK (1k)</button>
-            <button class="zen-btn" onclick="openCodeApp()" style="background:#dfe4ea; margin-top:5px;">🔑 CODE</button>
-            <div style="margin-top:auto; text-align:center;">
-                <span style="font-size: 9px; color: #999;">OWNER</span><br>
-                <strong style="font-size: 12px;">ASHTON</strong><br>
+            <div id="quest-list" style="background:#f9f9f9; padding:8px; border-radius:12px; border:1px solid #ddd; min-height: 60px; font-size: 11px; display: flex; flex-direction: column; gap: 2px;"></div>
+            <div class="button-row">
+                <button class="zen-btn" onclick="buyPack()" style="background:orange; color:white; border:none;">🎁 PACK (1k)</button>
+                <button class="zen-btn" onclick="openCodeApp()" style="background:#dfe4ea;">🔑 CODE</button>
+            </div>
+            <div style="text-align:center; margin-top: 5px;">
+                <span style="font-size: 9px; color: #999;">OWNER: </span><strong style="font-size: 12px;">ASHTON</strong> | 
                 <button onclick="showCredits()" style="border:none; background:none; color:var(--p-purple); font-size:9px; text-decoration:underline; cursor:pointer;">LICENSE & CREDITS</button>
             </div>
         </div>
@@ -161,8 +181,6 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
     /*
      * MIT License
      * Copyright (c) 2026 Ashton
-     * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-     * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
      */
 
     let petals = 10, tool = 0, harvestedTotal = 0, eTime = 2700, qTime = 600, mode = "";
@@ -291,7 +309,7 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
 
     function renderQuests() {
         let h = "";
-        quests.forEach(q => h += `<div style="margin-bottom:8px; border-bottom:1px solid #eee; ${q.done?'color:#2ecc71;text-decoration:line-through':''}">• ${q.t}</div>`);
+        quests.forEach(q => h += `<div style="padding: 2px; border-bottom:1px solid #eee; ${q.done?'color:#2ecc71;text-decoration:line-through':''}">• ${q.t}</div>`);
         document.getElementById('quest-list').innerHTML = h;
     }
 
@@ -336,7 +354,7 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
     }
 
     function showCredits() { 
-        const licenseText = `MIT License\nCopyright (c) 2026 Ashton\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.`;
+        const licenseText = `MIT License\nCopyright (c) 2026 Ashton\n\n...`;
         showAppModal("LICENSE & CREDITS", "<strong>Lead Developer:</strong> Ashton<br><br>" + licenseText); 
     }
     
