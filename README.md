@@ -19,24 +19,77 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
     <style>
         :root { --p-pink: #ff74b1; --p-purple: #6c5ce7; --gold: #ffd700; --dirt: #4a2c12; }
         * { box-sizing: border-box; }
-        body { background: #f0f2f5; margin: 0; padding: 10px; display: flex; justify-content: center; font-family: 'Arial Black', sans-serif; }
         
-        /* LICENSE MODAL STYLES */
+        /* FIX: Ensure the body doesn't fight the game size */
+        body { 
+            background: #f0f2f5; 
+            margin: 0; 
+            padding: 10px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start;
+            font-family: 'Arial Black', sans-serif; 
+            min-height: 100vh;
+        }
+        
         #license-modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
         .modal-content { background: white; padding: 25px; border-radius: 20px; width: 90%; max-width: 550px; max-height: 80vh; overflow-y: auto; font-family: monospace; font-size: 12px; line-height: 1.6; color: #333; }
         
-        .zen-site-wrapper { width: 100%; max-width: 1000px; background: #a8dadc; border-radius: 25px; border: 6px solid #3d240f; display: flex; flex-direction: column; overflow: hidden; user-select: none; }
-        #zen-header { background: white; padding: 10px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; align-items: center; border-bottom: 3px solid #ddd; }
+        /* FIX: Added max-height and flexible display to fit any website container */
+        .zen-site-wrapper { 
+            width: 100%; 
+            max-width: 1000px; 
+            max-height: 95vh; 
+            background: #a8dadc; 
+            border-radius: 25px; 
+            border: 6px solid #3d240f; 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+            user-select: none; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        #zen-header { background: white; padding: 10px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; align-items: center; border-bottom: 3px solid #ddd; flex-shrink: 0; }
         #p-count { color: var(--p-pink); font-size: clamp(16px, 4vw, 24px); background: #fff0f5; padding: 5px 20px; border-radius: 50px; border: 3px solid #ffdeeb; }
         
         .timer-box { background: #f1f2f6; padding: 5px 10px; border-radius: 12px; font-size: 10px; border: 1px solid #ccc; font-weight: bold; text-align: center; flex: 1; min-width: 90px; }
         
-        #game-log { background: #2d3436; color: #00ff88; padding: 8px; font-family: monospace; font-size: 11px; text-align: center; text-transform: uppercase; height: 35px; display: flex; align-items: center; justify-content: center; }
-        .zen-main { display: flex; padding: 15px; gap: 15px; flex-wrap: wrap; justify-content: center; }
-        #zen-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-gap: 8px; background: var(--dirt); padding: 15px; border-radius: 20px; border: 8px solid #3d240f; flex: 2; min-width: 280px; max-width: 500px; box-shadow: inset 0 0 30px rgba(0,0,0,0.5); }
+        #game-log { background: #2d3436; color: #00ff88; padding: 8px; font-family: monospace; font-size: 11px; text-align: center; text-transform: uppercase; height: 35px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+        /* FIX: Added overflow-y: auto so the game scrolls internally if the website is small */
+        .zen-main { 
+            display: flex; 
+            padding: 15px; 
+            gap: 15px; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            overflow-y: auto; 
+            flex-grow: 1;
+        }
+
+        /* FIX: min-width: 0 allows the grid to shrink correctly in tight spaces */
+        #zen-grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            grid-gap: 8px; 
+            background: var(--dirt); 
+            padding: 15px; 
+            border-radius: 20px; 
+            border: 8px solid #3d240f; 
+            flex: 2; 
+            min-width: 0; 
+            width: 100%;
+            max-width: 500px; 
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.5); 
+            height: fit-content;
+        }
+
         .slot { aspect-ratio: 1/1; background: #795548; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: clamp(20px, 8vw, 40px); cursor: pointer; position: relative; border: 3px solid transparent; transition: background 0.2s; }
         .slot:hover { background: #8d6e63; }
-        .zen-side { background: white; padding: 12px; border-radius: 20px; width: 100%; max-width: 200px; display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 160px; }
+
+        .zen-side { background: white; padding: 12px; border-radius: 20px; width: 100%; max-width: 200px; display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 160px; height: fit-content; }
+        
         .zen-btn { padding: 8px; border-radius: 10px; border: 3px solid #eee; cursor: pointer; font-weight: bold; font-size: 10px; background: white; transition: 0.1s; width: 100%; }
         .zen-btn:active { transform: scale(0.95); }
         .zen-btn.active { border-color: #2ecc71; background: #e8f5e9; box-shadow: 0 0 5px rgba(46, 204, 113, 0.3); }
@@ -54,7 +107,11 @@ A relaxing idle game where you grow plants, survive storms, and party during dis
         .lets-dance span { display: inline-block; animation: dance 0.5s infinite alternate; }
         @keyframes dance { from { transform: translateY(0); } to { transform: translateY(-8px); } }
 
-        @media (max-width: 600px) { .zen-main { flex-direction: column; align-items: center; } .zen-side { max-width: 100%; } #zen-grid { width: 100%; } }
+        @media (max-width: 600px) { 
+            .zen-main { flex-direction: column; align-items: center; } 
+            .zen-side { max-width: 100%; order: 2; } 
+            #zen-grid { width: 100%; order: 1; } 
+        }
     </style>
 </head>
 <body onload="init()">
